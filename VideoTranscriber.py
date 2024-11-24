@@ -12,7 +12,7 @@ warnings.filterwarnings('ignore', category=UserWarning, module='yt_dlp')
 class VideoTranscriber:
     def __init__(self, language='en'):
         try:
-            self.model = whisper.load_model("large")
+            self.model = whisper.load_model("base")
             self.language = language
             print(f"✓ Whisper model loaded successfully for language: {language}")
         except Exception as e:
