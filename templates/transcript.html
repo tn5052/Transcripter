@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transcript</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body { padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1 class="text-center mb-4">Transcript</h1>
+    <div class="container">
+        <pre id="transcript">{{ transcript }}</pre>
+        <button id="copy-button" class="btn btn-primary mb-3">Copy Transcript</button>
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+    <script>
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const transcriptText = document.getElementById('transcript').innerText;
+            navigator.clipboard.writeText(transcriptText).then(function() {
+                alert('Transcript copied to clipboard!');
+            }, function(err) {
+                alert('Failed to copy transcript: ', err);
+            });
+        });
+    </script>
+</body>
+</html>

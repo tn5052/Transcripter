@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Transcriber</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .file-input::file-selector-button {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .file-input::file-selector-button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="card p-8 w-full max-w-lg">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Video Transcriber</h1>
+        <form id="transcribe-form" class="space-y-6">
+            <div>
+                <label for="url" class="block text-sm font-medium text-gray-700">Video URL:</label>
+                <input type="text" id="url" name="url" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700">Or upload a video file:</label>
+                <input type="file" id="file" name="file" accept="video/*" class="file-input mt-1 block w-full text-sm text-gray-500">
+            </div>
+            <div>
+                <label for="language" class="block text-sm font-medium text-gray-700">Select Language:</label>
+                <select id="language" name="language" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="en">English</option>
+                    <option value="ur">Urdu</option>
+                    <!-- Add more languages as needed -->
+                </select>
+            </div>
+            <button type="submit" class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Transcribe</button>
+        </form>
+        <div id="progress" class="mt-4 text-center text-gray-600"></div>
+        <div id="result" class="mt-4 text-center text-gray-800"></div>
+        <button id="copy-button" class="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 mt-4">Copy Transcript</button>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#transcribe-form').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $('#progress').text('Processing...');
+                $('#result').empty();
+
+                $.ajax({
+                    url: '/transcribe',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#result').text(response.transcript);
+                        } else {
+                            $('#result').text('Error: ' + response.message);
+                        }
+                        $('#progress').empty();
+                    },
+                    error: function() {
+                        $('#result').text('An error occurred.');
+                        $('#progress').empty();
+                    }
+                });
+            });
+
+            $('#copy-button').on('click', function() {
+                const transcriptText = $('#result').text();
+                navigator.clipboard.writeText(transcriptText).then(function() {
+                    alert('Transcript copied to clipboard!');
+                }, function(err) {
+                    alert('Failed to copy transcript: ', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
